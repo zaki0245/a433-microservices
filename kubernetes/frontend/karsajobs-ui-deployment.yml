@@ -1,0 +1,35 @@
+# =====================================================
+# Deployment Frontend Karsa Jobs (Vue.js)
+# Mengelola Pod aplikasi frontend.
+# =====================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: karsajobs-ui
+  labels:
+    app: karsajobs
+    tier: frontend
+spec:
+  # Jumlah replica Pod frontend
+  replicas: 1
+  # Selector untuk mencocokkan Pod
+  selector:
+    matchLabels:
+      app: karsajobs
+      tier: frontend
+  # Template Pod
+  template:
+    metadata:
+      labels:
+        app: karsajobs
+        tier: frontend
+    spec:
+      containers:
+        - name: karsajobs-ui
+          # Image frontend hasil build & push dari Docker Hub
+          image: mzaki0245/karsajobs-ui:latest
+          # Hanya unduh jika belum ada di lokal
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http

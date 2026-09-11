@@ -1,0 +1,25 @@
+# =====================================================
+# Service Frontend Karsa Jobs
+# Mengekspos frontend agar bisa diakses dari browser
+# menggunakan NodePort.
+# =====================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: karsajobs-ui
+  labels:
+    app: karsajobs
+    tier: frontend
+spec:
+  # Port frontend (sesuai EXPOSE di Dockerfile starter)
+  ports:
+    - port: 8000
+      targetPort: 8000
+      # NodePort custom (range 30000-32767)
+      nodePort: 30080
+  # Selector untuk menemukan Pod frontend
+  selector:
+    app: karsajobs
+    tier: frontend
+  # Tipe NodePort agar bisa diakses dari browser
+  type: NodePort

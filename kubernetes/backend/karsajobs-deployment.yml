@@ -1,0 +1,54 @@
+# =====================================================
+# Deployment Backend Karsa Jobs (Go)
+# Mengelola Pod aplikasi backend.
+# =====================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: karsajobs
+  labels:
+    app: karsajobs
+    tier: backend
+spec:
+  # Jumlah replica Pod backend
+  replicas: 1
+  # Selector untuk mencocokkan Pod
+  selector:
+    matchLabels:
+      app: karsajobs
+      tier: backend
+  # Template Pod
+  template:
+    metadata:
+      labels:
+        app: karsajobs
+        tier: backend
+    spec:
+      containers:
+        - name: karsajobs
+          # Image hasil build & push dari Docker Hub
+          image: mzaki0245/karsajobs:latest
+          # Hanya unduh jika belum ada di lokal
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            # Port aplikasi backend
+            - name: APP_PORT
+              value: "8080"
+            # Host MongoDB (nama Service Headless)
+            - name: MONGO_HOST
+              value: mongo
+            # Username MongoDB diambil dari Secret
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_ROOT_USERNAME
+            # Password MongoDB diambil dari Secret
+            - name: MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_ROOT_PASSWORD

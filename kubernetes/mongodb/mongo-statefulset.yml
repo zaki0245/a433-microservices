@@ -1,0 +1,64 @@
+# =====================================================
+# StatefulSet MongoDB
+# Mengelola Pod MongoDB dengan identitas & storage yang stabil.
+# =====================================================
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+  labels:
+    app: karsajobs
+    tier: database
+spec:
+  # Nama Headless Service (harus sama dengan nama Service)
+  serviceName: mongo
+  # Jumlah replica MongoDB
+  replicas: 1
+  # Selector untuk mencocokkan Pod
+  selector:
+    matchLabels:
+      app: karsajobs
+      tier: database
+  # Template Pod
+  template:
+    metadata:
+      labels:
+        app: karsajobs
+        tier: database
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+              name: mongo
+          env:
+            # File berisi username root MongoDB
+            - name: MONGO_INITDB_ROOT_USERNAME_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+            # File berisi password root MongoDB
+            - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+          volumeMounts:
+            # Mount PVC ke /data/db (tempat data MongoDB)
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+            # Mount ConfigMap ke /config (file konfigurasi)
+            - name: mongo-config
+              mountPath: /config
+            # Mount Secret ke /etc/mongo-credentials (kredensial)
+            - name: mongo-secret
+              mountPath: /etc/mongo-credentials
+      volumes:
+        # Volume dari ConfigMap
+        - name: mongo-config
+          configMap:
+            name: mongo-config
+        # Volume dari Secret
+        - name: mongo-secret
+          secret:
+            secretName: mongo-secret
+        # Volume dari PVC
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc

@@ -1,0 +1,24 @@
+# =====================================================
+# Headless Service MongoDB
+# Wajib untuk StatefulSet. Tidak punya ClusterIP sendiri,
+# DNS akan langsung mengembalikan IP Pod MongoDB.
+# =====================================================
+apiVersion: v1
+kind: Service
+metadata:
+  # Nama Service ini dipakai backend sebagai MONGO_HOST
+  name: mongo
+  labels:
+    app: karsajobs
+    tier: database
+spec:
+  # Port default MongoDB
+  ports:
+    - port: 27017
+      targetPort: 27017
+  # Selector untuk menemukan Pod MongoDB
+  selector:
+    app: karsajobs
+    tier: database
+  # Headless Service: tidak diberi ClusterIP
+  clusterIP: None

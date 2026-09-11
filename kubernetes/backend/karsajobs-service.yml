@@ -1,0 +1,25 @@
+# =====================================================
+# Service Backend Karsa Jobs
+# Mengekspos backend agar bisa diakses dari luar cluster
+# menggunakan NodePort.
+# =====================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: karsajobs
+  labels:
+    app: karsajobs
+    tier: backend
+spec:
+  # Port aplikasi backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+      # NodePort custom (range 30000-32767)
+      nodePort: 30081
+  # Selector untuk menemukan Pod backend
+  selector:
+    app: karsajobs
+    tier: backend
+  # Tipe NodePort agar bisa diakses dari luar cluster
+  type: NodePort

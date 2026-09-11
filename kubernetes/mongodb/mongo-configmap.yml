@@ -1,0 +1,17 @@
+# =====================================================
+# ConfigMap MongoDB
+# Menyimpan konfigurasi MongoDB sebagai file mongo.conf
+# =====================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # Nama ConfigMap yang akan direferensikan StatefulSet
+  name: mongo-config
+  labels:
+    app: karsajobs
+    tier: database
+data:
+  # Data disimpan sebagai file bernama mongo.conf
+  mongo.conf: |
+    storage:
+      dbPath: /data/db

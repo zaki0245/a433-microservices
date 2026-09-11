@@ -1,0 +1,45 @@
+# =====================================================
+# PersistentVolume untuk MongoDB
+# Menyediakan penyimpanan yang bertahan meski Pod dihapus.
+# =====================================================
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv
+  labels:
+    app: karsajobs
+    tier: database
+spec:
+  # StorageClass manual agar bisa diikat manual dengan PVC
+  storageClassName: manual
+  # Kapasitas penyimpanan 1 GB
+  capacity:
+    storage: 1Gi
+  # Hanya bisa di-mount read-write oleh satu node
+  accessModes:
+    - ReadWriteOnce
+  # Menyimpan data di direktori host (cocok untuk Minikube)
+  hostPath:
+    path: "/mnt/data/mongo"
+---
+# =====================================================
+# PersistentVolumeClaim untuk MongoDB
+# Permintaan penyimpanan dari Pod MongoDB.
+# =====================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  labels:
+    app: karsajobs
+    tier: database
+spec:
+  # Harus sama dengan StorageClass PV
+  storageClassName: manual
+  # Harus sama dengan accessMode PV
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # Meminta 1 GB penyimpanan
+      storage: 1Gi
